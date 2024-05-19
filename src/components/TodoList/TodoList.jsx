@@ -1,12 +1,13 @@
 import { Grid, Text, Todo } from 'components';
 import { useSelector } from 'react-redux';
 import { selectFilter } from 'reduxTodo/filterSlice';
-import { selectTodos } from 'reduxTodo/todoSlice';
+import { useFetchTodosQuery } from 'reduxTodo/todosApi';
 
 export const TodoList = () => {
-  const todoList = useSelector(selectTodos);
+  const { data: todos = [] } = useFetchTodosQuery();
+
   const filter = useSelector(selectFilter);
-  const filteredTodos = todoList.filter(todo =>
+  const filteredTodos = todos.filter(todo =>
     todo.text.toLowerCase().includes(filter.toLowerCase()),
   );
   return (

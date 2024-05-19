@@ -5,9 +5,10 @@ import style from './EditForm.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentTodo, addCurrentTodo } from 'reduxTodo/todoSlice';
 
-import { editTodo } from 'reduxTodo/operations';
+import { useEditTodoMutation } from 'reduxTodo/todosApi';
 
 export const EditForm = () => {
+  const [editTodo] = useEditTodoMutation();
   const currentTodo = useSelector(selectCurrentTodo);
   const dispatch = useDispatch();
 
@@ -15,11 +16,16 @@ export const EditForm = () => {
     dispatch(addCurrentTodo(null));
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const form = e.target;
     const text = form.text.value;
-    dispatch(editTodo({ ...currentTodo, text }));
+    try {
+      await editTodo({ ...currentTodo, text }).unwrap();
+      dispatch(addCurrentTodo(null));
+    } catch (error) {
+      console.log(error.message);
+    }
     form.reset();
   };
 

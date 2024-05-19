@@ -8,26 +8,41 @@ import {
   Filter,
   EditForm,
 } from 'components';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchTodo } from 'reduxTodo/operations';
-import { selectCurrentTodo, selectTodos } from 'reduxTodo/todoSlice';
+
+import { useSelector } from 'react-redux';
+
+import { selectCurrentTodo } from 'reduxTodo/todoSlice';
+import { useFetchTodosQuery } from 'reduxTodo/todosApi';
 
 export const App = () => {
-  const items = useSelector(selectTodos);
   const isEdit = useSelector(selectCurrentTodo);
+  const { data: items = [], isFetching } = useFetchTodosQuery();
 
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchTodo());
-  }, [dispatch]);
+  console.log(isFetching);
 
   return (
     <>
       <Header />
       <Section>
         <Container>
+          {isFetching && (
+            <div
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100dvh',
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: '9999',
+              }}
+            >
+              <span style={{ fontSize: 30, color: 'white' }}>LOADING</span>
+            </div>
+          )}
           {!isEdit ? <Form /> : <EditForm />}
           <Filter></Filter>
           {items.length > 0 ? (
